@@ -10,11 +10,12 @@ function MovieDetail({navigation, route}) {
     );
 }
 
-const styles = StyleSheet({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: Constants.statusBarHeight,
     },
-})
+});
+
 
 export default MovieDetail;

@@ -33,10 +33,13 @@ class MainRoot extends Component {
     render() {
     const HomeComponent = (props) => <Home genres={this.state.genres} />;
 
-    if(this.state.isLoading) {
-        <SafeAreaView style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
+    if (this.state.isLoading) {
+        return (
+          <SafeAreaView style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
             <ActivityIndicator />
-        </SafeAreaView>;
+          </SafeAreaView>
+        );
+      
     }
     return (
         <Tab.Navigator
