@@ -4,14 +4,22 @@ import Movie from "../models/Movie";
 import MovieItem from "../components/MovieItem";
 import Constants from "expo-constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 export default class Home extends Component {
 _isMount = false;
+genres = [];
 
 state = {
     isLoading: false,
     recentMovies: [],
     popularMovies: [],
 };
+
+constructor(props){
+    super(props);
+    this.genres = props.genres
+}
+
 
     componentDidMount(){
         this._isMount = true;
@@ -22,7 +30,17 @@ state = {
             .then(response => response.json())
             .then(responseJson => {
                 const data = [];
+                var allgenres = this.genres;
                 responseJson.results.forEach((movie) => {
+                    movie.genres = [];
+                    movie.genre_ids.forEach((genreid) => {
+                        var genreData = allgenres.filter((x) => x.id == genreid);
+                        if (genreData.length != 0){
+                            console.log(genreData[0].name);
+                            movie.genres.push(genreData[0].name);
+                        }
+                    });
+
                     data.push(
                         new Movie({
                             id: movie.id,
@@ -35,6 +53,7 @@ state = {
                             release_date: movie.release_date,
                             vote_average: movie.vote_average,
                             vote_count: movie.vote_count,
+                            genres: movie.genres,
                         })
                     );
                 });

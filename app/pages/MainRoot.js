@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from "react-native";
 import Constants from 'expo-constants';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from "./../pages/Home";
 import Favourite from "./../pages/Favourite";
 import Settings from "./../pages/Settings";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Home from "./Home";
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +14,9 @@ class MainRoot extends Component {
     state={
         isLoading: true,
         genres:[],
-    }
+    };
+
+
     componentDidMount(){
         return fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=802b2c4b88ea1183e50e6b285a27696e')
         .then(response => response.json())
@@ -29,6 +31,8 @@ class MainRoot extends Component {
     }
 
     render() {
+    const HomeComponent = (props) => <Home genres={this.state.genres} />;
+
     if(this.state.isLoading) {
         <SafeAreaView style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
             <ActivityIndicator />
@@ -51,7 +55,7 @@ class MainRoot extends Component {
                     ),
                 }}
                 name="Home"
-                component={Home}
+                component={HomeComponent}
             />
             <Tab.Screen
                 options={{
