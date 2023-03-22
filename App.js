@@ -13,16 +13,16 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-      screenOptions={{headerShown: false}}>
+        screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="MainRoot"
           component={MainRoot}
-          options={{title: "MainRoot"}}
+          options={{ title: "MainRoot" }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="MovieDetail"
           component={MovieDetail}
-          options={{title: "MovieDetail"}}
+          options={{ title: "MovieDetail" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

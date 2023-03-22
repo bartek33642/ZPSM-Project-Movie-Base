@@ -6,27 +6,27 @@ import Constants from "expo-constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default class Home extends Component {
-_isMount = false;
-genres = [];
+    _isMount = false;
+    genres = [];
 
-state = {
-    isLoading: false,
-    recentMovies: [],
-    popularMovies: [],
-};
+    state = {
+        isLoading: false,
+        recentMovies: [],
+        popularMovies: [],
+    };
 
-constructor(props){
-    super(props);
-    this.genres = props.genres
-}
+    constructor(props) {
+        super(props);
+        this.genres = props.genres
+    }
 
 
-    componentDidMount(){
+    componentDidMount() {
         this._isMount = true;
 
         return fetch(
             "http://api.themoviedb.org/3/movie/popular?api_key=802b2c4b88ea1183e50e6b285a27696e"
-            )
+        )
             .then(response => response.json())
             .then(responseJson => {
                 const data = [];
@@ -35,8 +35,8 @@ constructor(props){
                     movie.genres = [];
                     movie.genre_ids.forEach((genreid) => {
                         var genreData = allgenres.filter((x) => x.id == genreid);
-                        if (genreData.length != 0){
-                            console.log(genreData[0].name);
+                        if (genreData.length != 0) {
+                            //console.log(genreData[0].name);
                             movie.genres.push(genreData[0].name);
                         }
                     });
@@ -61,12 +61,12 @@ constructor(props){
                 this.setState({
                     popularMovies: data,
                 });
-        })
-        .catch(error => console.error(error));
-       
+            })
+            .catch(error => console.error(error));
+
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this._isMount = false;
     }
 
@@ -74,16 +74,16 @@ constructor(props){
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
-                <Text style={styles.title}>Movie Catch</Text>
-                <MaterialCommunityIcons name="magnify" size={24} />
+                    <Text style={styles.title}>Movie Catch</Text>
+                    <MaterialCommunityIcons name="magnify" size={24} />
                 </View>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View style={{flexDirection: "row", flex: 1, paddingLeft: 20}}>
-                {
-                    this.state.popularMovies.map((item, index) => {
-                        return index < 4 ? <MovieItem item={item} /> : <View />;
-                    })}
-                </View>
+                    <View style={{ flexDirection: "row", flex: 1, paddingLeft: 20 }}>
+                        {
+                            this.state.popularMovies.map((item, index) => {
+                                return index < 4 ? <MovieItem item={item} /> : <View />;
+                            })}
+                    </View>
                 </ScrollView>
             </SafeAreaView>
         );
@@ -96,10 +96,10 @@ const styles = StyleSheet.create({
         marginTop: Constants.statusBarHeight,
         paddingVertical: 20,
     },
-    header:{
+    header: {
         width: "100%",
         flexDirection: "row",
-        justifyContent:"space-between",
+        justifyContent: "space-between",
         paddingHorizontal: 20,
         marginBottom: 10,
     },
