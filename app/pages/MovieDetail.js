@@ -1,12 +1,50 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { View, StyleSheet, Text, Image, TouchableWithoutFeedback } from 'react-native';
 import Constants from 'expo-constants';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView } from "react-native-gesture-handler";
 import ChipGroup from "./../components/ChipGroup";
+import TeaserTrailer from '../models/TeaserTrailer';
+import TrailerItem from '../components/TrailerItem';
 
-function MovieDetail({ navigation, route }) {
-    const movieItem = route.params.item;
+class MovieDetail extends Component {
+movieItem = null;
+    constructor(props)
+    {
+        super(props);
+        this.movieItem = props.route.params.item;
+    }
+
+    state = {
+        teaserTrailers: [],
+    };
+
+    componentDidMount(){
+        return fetch
+        (
+        'http://api.themoviedb.org/3/movie/' + 
+        this.movieItem.id + 
+        '/videos?api_key=802b2c4b88ea1183e50e6b285a27696e'
+        )
+        .then((response) => response.json())
+        .then((responseJson) => {
+            var items = [];
+            responseJson.results.map(movie => {
+                items.push(new TeaserTrailer({
+                    key: movie.key, 
+                    name: movie.name, 
+                    type: movie.type,
+                })
+                );
+            });
+        this.setState({teaserTrailers: items})
+        })
+        .catch(error => console.error)
+    }
+
+    render () {
+
+     
     // var genres = "";
 
     // movieItem.genres.map((genre, index) => {
@@ -16,8 +54,9 @@ function MovieDetail({ navigation, route }) {
     // });
     return (
         <View style={styles.container}>
-            <ScrollView>
-                <TouchableWithoutFeedback onPress={() => navigation.pop()}>
+           <ScrollView>
+                {/* <TouchableWithoutFeedback onPress={() => navigation.pop()}>  */}
+                <TouchableWithoutFeedback onPress={() => this.props.navigation.pop()}>
                     <MaterialCommunityIcons
                         style={{
                             position: "absolute",
@@ -37,7 +76,7 @@ function MovieDetail({ navigation, route }) {
                     resizeMode={"cover"}
                     source={{
                         uri:
-                            "http://image.tmdb.org/t/p/w500/" + movieItem.backdrop_path,
+                            "http://image.tmdb.org/t/p/w500/" + this.movieItem.backdrop_path,
                     }}
                 />
                 <View style={{ flex: 1, padding: 20 }}>
@@ -51,8 +90,8 @@ function MovieDetail({ navigation, route }) {
                         }}
                     >
                         <View style={{ flexWrap: "wrap", flexDirection: "column" }}>
-                            <Text style={styles.title}>{movieItem.title}</Text>
-                            <Text>{movieItem.release_date}</Text>
+                            <Text style={styles.title}>{this.movieItem.title}</Text>
+                            <Text>{this.movieItem.release_date}</Text>
                         </View>
                         <View
                             style={{
@@ -64,19 +103,26 @@ function MovieDetail({ navigation, route }) {
                                 alignItems: "center",
                             }}
                         >
-                            <Text>{movieItem.vote_average}</Text>
+                            <Text>{this.movieItem.vote_average}</Text>
                         </View>
                     </View>
 
-                    <ChipGroup datas={movieItem.genres} />
+                    <ChipGroup datas={this.movieItem.genres} />
 
                     <Text style={styles.header}>Overview</Text>
-                    <Text>{movieItem.overview}</Text>
+                    <Text>{this.movieItem.overview}</Text>
                     <Text style={styles.header}>Teasers & Trailers</Text>
+                    <View style={{flexWrap: "wrap", flexDirection: "row"}}>
+                        {
+                            this.state.teaserTrailers.map((item) => {
+                                return <TrailerItem key={item.key} poster={this.movieItem.backdrop_path} data={item} />;
+                            })}
+                    </View>
                 </View>
-            </ScrollView>
+            </ScrollView> 
         </View>
     );
+   }
 }
 
 const styles = StyleSheet.create({
