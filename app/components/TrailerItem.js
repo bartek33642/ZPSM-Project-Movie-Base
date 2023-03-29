@@ -1,11 +1,13 @@
 import React from "react";
-import {View, Text, Image, Dimensions} from "react-native";
+import {View, Text, Image, Dimensions, TouchableWithoutFeedback} from "react-native";
 function TrailerItem(props) {
     const deviceWidth = Dimensions.get('window').width;
     const posterWidth = (deviceWidth - 50) / 2;
     const leftPosition = (posterWidth - 24) / 2;
     console.log(deviceWidth);
     return (
+        <TouchableWithoutFeedback 
+            onPress={props.onPressFunction}> 
         <View style={{marginRight: 5 }}>
             <Image 
             style={{
@@ -29,6 +31,7 @@ function TrailerItem(props) {
             />
             <Text style={{flexWrap: "wrap", width: posterWidth }}>{props.data.name}</Text>
         </View>
+        </TouchableWithoutFeedback>
     );
 }
 export default TrailerItem;
