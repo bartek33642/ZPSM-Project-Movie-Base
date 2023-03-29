@@ -46,7 +46,7 @@ function MovieItem(props) {
                 <Image
                     style={styles.poster}
                     source={{ uri: "http://image.tmdb.org/t/p/w342/" + props.item.poster_path }} />
-                <Text style={{ width: 171 }}>{props.item.title}</Text>
+                <Text style={{ width: 171, fontFamily: "Poppins", fontSize: 13 }}>{props.item.title}</Text>
             </View>
         </TouchableWithoutFeedback>
     );

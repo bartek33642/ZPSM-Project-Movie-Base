@@ -47,27 +47,38 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainRoot from './app/pages/MainRoot';
 import MovieDetail from './app/pages/MovieDetail';
 import MovieItem from './app/components/MovieItem'; //importujemy komponent MovieItem
+import { useFonts } from 'expo-font';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="MainRoot"
-          component={MainRoot}
-          options={{ title: "MainRoot" }}
-        />
-        <Stack.Screen
-          name="MovieDetail"
-          component={MovieDetail}
-          options={{ title: "MovieDetail" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  let [fontsLoaded] = useFonts({
+    Poppins: require('./app/assets/fonts/Poppins-Regular.ttf'),
+    PoppinsLight: require('./app/assets/fonts/Poppins-Light.ttf'),
+    PoppinsSBold: require('./app/assets/fonts/Poppins-SemiBold.ttf'),
+    PoppinsBold: require('./app/assets/fonts/Poppins-Bold.ttf'),
+  });
+  if (!fontsLoaded) {
+    <View></View>;
+  } else {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}>
+          <Stack.Screen
+            name="MainRoot"
+            component={MainRoot}
+            options={{ title: "MainRoot" }}
+          />
+          <Stack.Screen
+            name="MovieDetail"
+            component={MovieDetail}
+            options={{ title: "MovieDetail" }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

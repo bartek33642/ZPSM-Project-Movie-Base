@@ -48,6 +48,7 @@ class MainRoot extends Component {
                     headerShown: false,
                     tabBarActiveTintColor: "#333",
                     tabBarInactiveTintColor: "#999",
+                    tabBarLabelStyle: { fontFamily: "Poppins" }
                 }}
             >
                 <Tab.Screen
