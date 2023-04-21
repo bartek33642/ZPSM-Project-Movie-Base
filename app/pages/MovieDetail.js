@@ -1,26 +1,130 @@
-import React, { Component, useState } from 'react';
-import { WebView } from 'react-native-webview';
+import React, { Component } from 'react';
 import { View, StyleSheet, Text, Image, TouchableWithoutFeedback, Modal, } from 'react-native';
+import YoutubePlayer from 'react-native-youtube-iframe';
 import Constants from 'expo-constants';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ScrollView } from "react-native-gesture-handler";
 import ChipGroup from "./../components/ChipGroup";
 import TeaserTrailer from '../models/TeaserTrailer';
 import TrailerItem from '../components/TrailerItem';
-import YoutubePlayer from 'react-native-youtube-iframe';
+import * as SQLite from "expo-sqlite";
+import * as FileSystem from "expo-file-system";
 
+const db = SQLite.openDatabase("movie.db");
 class MovieDetail extends Component {
     movieItem = null;
     constructor(props) {
         super(props);
         this.movieItem = props.route.params.item;
+        this.readMovieData(this.movieItem);
     }
 
     state = {
         teaserTrailers: [],
         activeTrailerKey: "",
-        modalVisible: false
+        modalVisible: false,
+        isFavorite: false,
     };
+
+    readMovieData(data){
+        db.transaction((tx) => {
+            // sending 4 arguments in executeSql
+            tx.executeSql(
+                "SELECT * FROM Favorites WHERE movie_id = ?",
+                [data.id],
+                (txObj, {rows: { _array } }) => {
+                    if (_array.length != 0){
+                        this.setState({isFavorite: true});
+                    }
+                    else {
+                        console.log("data yok");
+                    }
+                },
+                (txObj, error) => console.error(error)
+            ); // end executeSQL
+        }); //end transaction
+    }
+    downloadFile = async (data, size) => {
+        const movieDir = FileSystem.documentDirectory + "/" + data.id + "/";
+        const dirInfo = await FileSystem.getInfoAsync(movieDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(movieDir, {intermediates: true});
+        }
+
+        const fileUri =
+            movieDir + ( size == 342 ? "poster_path.jpg" : "backdrop_path.jpg");
+
+        const uri = 
+        "http://image.tmdb.org/t/p/w" + size + "/" + (size == 342 
+            ? data.poster_path
+            : data.backdrop_path);
+        // console.log(uri);
+        let downloadObject = FileSystem.createDownloadResumable(uri,fileUri);
+        let response = await downloadObject.downloadAsync();
+        return response;
+    };
+
+    deleteItem = async (data) => {
+        const movieDir = FileSystem.documentDirectory + "/" + data.id + "/";
+        await FileSystem.deleteAsync(movieDir);
+        db.transaction((tx) => {
+            Text.executeSql(
+                "DELETE FROM Favorites WHERE movie_id = ?",
+                [data.id],
+                (txObj, resultSet) => {
+                    if (resultSet.rowsAffected > 0) {
+                        //Delete operation
+                        this.setState({isFavorite: false});
+                    }
+                }
+            );
+        });
+    };
+
+    addItem = async (data) => {
+        await this.downloadFile(data,342).then(response => { // TODO: poster_path download
+            if(response.status == 200){
+                this.downloadFile(data, 500).then(response =>{ // TODO: backdrop_path download
+                    if(response.status == 200){
+                        data.genresString = "";
+                        data.genresString += data.genres.map((item, index) => item);
+                        db.transaction((tx) => {
+                            tx.executeSql(
+                                "INSERT INTO Favorites (movie_id, title, genres, overview, popularity, release_date, vote_average, vote_count) values (?, ?, ?, ?, ?, ?, ?, ?)",
+                                [
+                                    data.id,
+                                    data.title,
+                                    data.genresString,
+                                    data.overview,
+                                    data.popularity,
+                                    data.release_date,
+                                    data.vote_average,
+                                    data.vote_count,
+                                ],
+                                (txObj, resultSet) => {
+                                    this.setState({isFavorite: true});
+                                    
+                                },
+                                (txObj, error) => console.log("Error", error)
+                            );
+                        });  
+                    }
+                });
+            }
+        });
+        
+    };
+
+    favoriteProcess(data){
+        if(this.state.isFavorite){
+            // TODO: delete
+            this.deleteItem(data);
+        }
+        else {
+            // TODO: insert
+            this.addItem(data)
+        }
+    }
 
     componentDidMount() {
         return fetch
@@ -40,10 +144,12 @@ class MovieDetail extends Component {
                     })
                     );
                 });
-                this.setState({ teaserTrailers: items })
+                this.setState({ teaserTrailers: items });
             })
-            .catch(error => console.error)
+            .catch((error) => console.error(error));
     }
+
+    
 
     render() {
         return (
@@ -69,7 +175,7 @@ class MovieDetail extends Component {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 left: 20,
-                                borderRadius: 10
+                                borderRadius: 10,
                             }}>
                                 <MaterialCommunityIcons name="close" size={20} color={"white"} />
                             </View>
@@ -84,7 +190,6 @@ class MovieDetail extends Component {
                     </View>
                 </Modal>
                 <ScrollView>
-                    {/* <TouchableWithoutFeedback onPress={() => navigation.pop()}>  */}
                     <TouchableWithoutFeedback onPress={() => this.props.navigation.pop()}>
                         <MaterialCommunityIcons
                             style={{
@@ -100,6 +205,23 @@ class MovieDetail extends Component {
                             color={"#fff"}
                         />
                     </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                    onPress={() => this.favoriteProcess(this.movieItem)}
+                    >
+                    <MaterialCommunityIcons
+                    style={{
+                        position: "absolute",
+                        top: Constants.statusBarHeight + 10,
+                        right: 10,
+                        zIndex: 1,
+                        paddingLeft: 20,
+                        paddingBottom: 20,
+                    }}
+                    name={this.state.isFavorite ? "heart" : "heart-outline"}
+                    size={24}
+                    color={"#fff"}
+                    />
+                    </TouchableWithoutFeedback>
                     <Image
                         style={styles.poster}
                         resizeMode={"cover"}
@@ -108,6 +230,7 @@ class MovieDetail extends Component {
                                 "http://image.tmdb.org/t/p/w500/" + this.movieItem.backdrop_path,
                         }}
                     />
+
                     <View style={{ flex: 1, padding: 20 }}>
                         <View
                             style={{

@@ -46,21 +46,53 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainRoot from './app/pages/MainRoot';
 import MovieDetail from './app/pages/MovieDetail';
-import MovieItem from './app/components/MovieItem'; //importujemy komponent MovieItem
-import { useFonts } from 'expo-font';
+import * as Font from "expo-font";
+// import MovieItem from './app/components/MovieItem'; //importujemy komponent MovieItem
+// import { useFonts } from 'expo-font';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
-    Poppins: require('./app/assets/fonts/Poppins-Regular.ttf'),
-    PoppinsLight: require('./app/assets/fonts/Poppins-Light.ttf'),
-    PoppinsSBold: require('./app/assets/fonts/Poppins-SemiBold.ttf'),
-    PoppinsBold: require('./app/assets/fonts/Poppins-Bold.ttf'),
-  });
+  const [fontsLoaded, setFontLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    async function loadResourcesAndDataAsync(){
+      try {
+        // Load fonts
+        await Font.loadAsync({
+          "poppins-r": require("./app/assets/fonts/Poppins-Regular.ttf"),
+          "poppins-l": require("./app/assets/fonts/Poppins-Light.ttf"),
+          "poppins-sb": require("./app/assets/fonts/Poppins-SemiBold.ttf"),
+          "poppins-b": require("./app/assets/fonts/Poppins-Bold.ttf"),
+          Poppins: require('./app/assets/fonts/Poppins-Regular.ttf'),
+          PoppinsLight: require('./app/assets/fonts/Poppins-Light.ttf'),
+          PoppinsSBold: require('./app/assets/fonts/Poppins-SemiBold.ttf'),
+          PoppinsBold: require('./app/assets/fonts/Poppins-Bold.ttf'),
+        });
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setFontLoaded(true);
+      }
+    }
+
+    loadResourcesAndDataAsync();
+  }, []);
+
   if (!fontsLoaded) {
-    <View></View>;
-  } else {
+    return null;
+  }
+
+  // let [fontsLoaded] = useFonts({
+  //   Poppins: require('./app/assets/fonts/Poppins-Regular.ttf'),
+  //   PoppinsLight: require('./app/assets/fonts/Poppins-Light.ttf'),
+  //   PoppinsSBold: require('./app/assets/fonts/Poppins-SemiBold.ttf'),
+  //   PoppinsBold: require('./app/assets/fonts/Poppins-Bold.ttf'),
+  // });
+  // if (!fontsLoaded) {
+  //   <View></View>;
+  // } else {
+
     return (
       <NavigationContainer>
         <Stack.Navigator
@@ -79,7 +111,6 @@ export default function App() {
       </NavigationContainer>
     );
   }
-}
 
 const styles = StyleSheet.create({
   container: {
