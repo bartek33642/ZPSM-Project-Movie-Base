@@ -26,40 +26,36 @@ class MovieDetail extends Component {
         isFavorite: false,
     };
 
-    readMovieData(data){
+    readMovieData(data) {
         db.transaction((tx) => {
             // sending 4 arguments in executeSql
             tx.executeSql(
                 "SELECT * FROM Favorites WHERE movie_id = ?",
                 [data.id],
-                (txObj, {rows: { _array } }) => {
-                    if (_array.length != 0){
-                        this.setState({isFavorite: true});
+                (txObj, { rows: { _array } }) => {
+                    if (_array.length != 0) {
+                        this.setState({ isFavorite: true });
                     }
                     else {
-                        console.log("data yok");
+                        //console.log("data yok");
                     }
                 },
                 (txObj, error) => console.error(error)
             ); // end executeSQL
         }); //end transaction
     }
-    downloadFile = async (data, size) => {
+
+    downloadFile = async (data, process) => {
         const movieDir = FileSystem.documentDirectory + "/" + data.id + "/";
         const dirInfo = await FileSystem.getInfoAsync(movieDir);
         if (!dirInfo.exists) {
-            await FileSystem.makeDirectoryAsync(movieDir, {intermediates: true});
+            await FileSystem.makeDirectoryAsync(movieDir, { intermediates: true });
         }
-
         const fileUri =
-            movieDir + ( size == 342 ? "poster_path.jpg" : "backdrop_path.jpg");
+            movieDir + (process == 1 ? "poster_path.jpg" : "backdrop_path.jpg");
 
-        const uri = 
-        "http://image.tmdb.org/t/p/w" + size + "/" + (size == 342 
-            ? data.poster_path
-            : data.backdrop_path);
-        // console.log(uri);
-        let downloadObject = FileSystem.createDownloadResumable(uri,fileUri);
+        const uri = process == 1 ? data.poster_path : data.backdrop_path;
+        let downloadObject = FileSystem.createDownloadResumable(uri, fileUri);
         let response = await downloadObject.downloadAsync();
         return response;
     };
@@ -68,13 +64,13 @@ class MovieDetail extends Component {
         const movieDir = FileSystem.documentDirectory + "/" + data.id + "/";
         await FileSystem.deleteAsync(movieDir);
         db.transaction((tx) => {
-            Text.executeSql(
+            tx.executeSql(
                 "DELETE FROM Favorites WHERE movie_id = ?",
                 [data.id],
                 (txObj, resultSet) => {
                     if (resultSet.rowsAffected > 0) {
                         //Delete operation
-                        this.setState({isFavorite: false});
+                        this.setState({ isFavorite: false });
                     }
                 }
             );
@@ -82,10 +78,10 @@ class MovieDetail extends Component {
     };
 
     addItem = async (data) => {
-        await this.downloadFile(data,342).then(response => { // TODO: poster_path download
-            if(response.status == 200){
-                this.downloadFile(data, 500).then(response =>{ // TODO: backdrop_path download
-                    if(response.status == 200){
+        await this.downloadFile(data, 1).then(response => { // TODO: poster_path download
+            if (response.status == 200) {
+                this.downloadFile(data, 2).then(response => { // TODO: backdrop_path download
+                    if (response.status == 200) {
                         data.genresString = "";
                         data.genresString += data.genres.map((item, index) => item);
                         db.transaction((tx) => {
@@ -102,21 +98,21 @@ class MovieDetail extends Component {
                                     data.vote_count,
                                 ],
                                 (txObj, resultSet) => {
-                                    this.setState({isFavorite: true});
-                                    
+                                    this.setState({ isFavorite: true });
+
                                 },
                                 (txObj, error) => console.log("Error", error)
                             );
-                        });  
+                        });
                     }
                 });
             }
         });
-        
+
     };
 
-    favoriteProcess(data){
-        if(this.state.isFavorite){
+    favoriteProcess(data) {
+        if (this.state.isFavorite) {
             // TODO: delete
             this.deleteItem(data);
         }
@@ -149,7 +145,7 @@ class MovieDetail extends Component {
             .catch((error) => console.error(error));
     }
 
-    
+
 
     render() {
         return (
@@ -190,7 +186,14 @@ class MovieDetail extends Component {
                     </View>
                 </Modal>
                 <ScrollView>
-                    <TouchableWithoutFeedback onPress={() => this.props.navigation.pop()}>
+                    <TouchableWithoutFeedback
+                        onPress={() => {
+                            this.props.navigation.setParams({
+                                querry: "someText",
+                            });
+                            this.props.navigation.pop();
+                        }}
+                    >
                         <MaterialCommunityIcons
                             style={{
                                 position: "absolute",
@@ -206,28 +209,27 @@ class MovieDetail extends Component {
                         />
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback
-                    onPress={() => this.favoriteProcess(this.movieItem)}
+                        onPress={() => this.favoriteProcess(this.movieItem)}
                     >
-                    <MaterialCommunityIcons
-                    style={{
-                        position: "absolute",
-                        top: Constants.statusBarHeight + 10,
-                        right: 10,
-                        zIndex: 1,
-                        paddingLeft: 20,
-                        paddingBottom: 20,
-                    }}
-                    name={this.state.isFavorite ? "heart" : "heart-outline"}
-                    size={24}
-                    color={"#fff"}
-                    />
+                        <MaterialCommunityIcons
+                            style={{
+                                position: "absolute",
+                                top: Constants.statusBarHeight + 10,
+                                right: 10,
+                                zIndex: 1,
+                                paddingLeft: 20,
+                                paddingBottom: 20,
+                            }}
+                            name={this.state.isFavorite ? "heart" : "heart-outline"}
+                            size={24}
+                            color={"#fff"}
+                        />
                     </TouchableWithoutFeedback>
                     <Image
                         style={styles.poster}
                         resizeMode={"cover"}
                         source={{
-                            uri:
-                                "http://image.tmdb.org/t/p/w500/" + this.movieItem.backdrop_path,
+                            uri: this.movieItem.backdrop_path,
                         }}
                     />
 

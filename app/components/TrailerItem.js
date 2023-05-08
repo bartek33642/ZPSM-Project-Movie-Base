@@ -4,11 +4,11 @@ function TrailerItem(props) {
     const deviceWidth = Dimensions.get('window').width;
     const posterWidth = (deviceWidth - 50) / 2;
     const leftPosition = (posterWidth - 24) / 2;
-    console.log(deviceWidth);
+    const marginValue = props.itemIndex % 2 == 0 ? 10 : 0;
+
     return (
-        <TouchableWithoutFeedback
-            onPress={props.onPressFunction}>
-            <View style={{ marginRight: 5 }}>
+        <TouchableWithoutFeedback onPress={props.onPressFunction}>
+            <View style={{ marginRight: marginValue, marginTop: 10 }}>
                 <Image
                     style={{
                         position: "absolute",
@@ -27,7 +27,7 @@ function TrailerItem(props) {
                         borderRadius: 20,
                         marginBottom: 5,
                     }}
-                    source={{ uri: "http://image.tmdb.org/t/p/w342/" + props.poster }}
+                    source={{ uri: props.poster }}
                 />
                 <Text
                     style={{
