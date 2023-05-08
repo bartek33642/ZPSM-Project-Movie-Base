@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from "react-n
 import Constants from 'expo-constants';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from "./../pages/Home";
-import Favourite from "./../pages/Favourite";
+import Favourite from "./Favourite";
 import Settings from "./../pages/Settings";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SQLite from "expo-sqlite";

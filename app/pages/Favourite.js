@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, Button, Text, StyleSheet } from 'react-native';
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("movie.db");
 
