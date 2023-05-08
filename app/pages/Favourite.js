@@ -28,7 +28,6 @@ export default class Favourite extends Component {
         }); //end transaction
     }
     
-    
     render() {
         return (
             <SafeAreaView style={styles.container}>
