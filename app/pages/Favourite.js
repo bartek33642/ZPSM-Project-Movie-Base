@@ -7,6 +7,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import AppLoading from "expo-app-loading";
 import RecentMovieItem from "../components/RecentMovieItem";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 const db = SQLite.openDatabase("movie.db");
 export default function Favourite({ navigation, route }) {
     const [data, setData] = useState(null);

@@ -15,19 +15,19 @@ class MainRoot extends Component {
     constructor() {
         super();
 
-    this.state = {
-        isLoading: true,
-        genres: [],
-    };
+        this.state = {
+            isLoading: true,
+            genres: [],
+        };
 
-    db.transaction((tx) => {
-        tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS Favorites (id INTEGER PRIMARY KEY AUTOINCREMENT, movie_id INT, title TEXT, genres TEXT, overview TEXT, popularity TEXT, release_date TEXT, vote_average TEXT, vote_count TEXT, poster TEXT, backdrop TEXT);"
-        );
-    });
+        db.transaction((tx) => {
+            tx.executeSql(
+                "CREATE TABLE IF NOT EXISTS Favorites (id INTEGER PRIMARY KEY AUTOINCREMENT, movie_id INT, title TEXT, genres TEXT, overview TEXT, popularity TEXT, release_date TEXT, vote_average TEXT, vote_count TEXT, poster TEXT, backdrop TEXT);"
+            );
+        });
 
-    this.fetchData();
-}
+        this.fetchData();
+    }
 
     fetchData() {
         return fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=802b2c4b88ea1183e50e6b285a27696e')
@@ -42,11 +42,13 @@ class MainRoot extends Component {
     }
 
     render() {
-        const HomeComponent = (props) => <Home genres={this.state.genres} />;
+        const HomeComponent = (props) => (
+            <Home {...props} genres={this.state.genres} />
+        );
         if (this.state.isLoading) {
-                <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <ActivityIndicator />
-                </SafeAreaView>;
+            <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator />
+            </SafeAreaView>;
         }
 
         return (

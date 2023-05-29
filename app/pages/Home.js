@@ -5,13 +5,15 @@ import MovieItem from "../components/MovieItem";
 import RecentMovieItem from "../components/RecentMovieItem";
 import Constants from "expo-constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import ViewAll from "./ViewAll";
+import { TouchableWithoutFeedback } from 'react-native';
+
 
 export default class Home extends Component {
     _isMount = false;
     baseUrl = "http://api.themoviedb.org/3/movie/";
     apiKey = "802b2c4b88ea1183e50e6b285a27696e";
     genres = [];
-
     state = {
         isLoading: false,
         recentMovies: [],
@@ -136,22 +138,38 @@ export default class Home extends Component {
                         }}
                     >
                         <Text style={{ fontFamily: "Poppins" }}>Popular Movies</Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                flexWrap: "wrap",
-                                alignItems: "center"
-                            }}
+                        <TouchableWithoutFeedback
+                            onPress={() =>
+                                this.props.navigation.navigate('ViewAll', {
+                                    genres: this.genres,
+                                    isPopular: true,
+                                })
+                            }
                         >
-                            <Text style={{ fontFamily: "PoppinsSBold" }}>View All</Text>
-                            <MaterialCommunityIcons name="chevron-right" size={20} />
-                        </View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <Text style={{ fontFamily: "poppins-sb" }}>View All</Text>
+                                <MaterialCommunityIcons name="chevron-right" size={20} />
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={{ flexDirection: "row", flex: 1, paddingLeft: 20 }}>
                             {
                                 this.state.popularMovies.map((item, index) => {
-                                    return index < 4 ? <MovieItem key={item.id} item={item} /> : <View key={index} />;
+                                    return index < 4 ? (
+                                        <MovieItem
+                                            key={item.id}
+                                            item={item}
+                                        />
+                                    ) : (
+                                        <View key={index} />
+                                    );
                                 })}
                         </View>
                     </ScrollView>
@@ -165,18 +183,26 @@ export default class Home extends Component {
                         }}
                     >
                         <Text style={{ fontFamily: "Poppins" }}>Recent Movies</Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                flexWrap: "wrap",
-                                alignItems: "center"
-                            }}
+                        <TouchableWithoutFeedback
+                            onPress={() =>
+                                this.props.navigation.navigate('ViewAll', {
+                                    genres: this.genres,
+                                    isPopular: false,
+                                })
+                            }
                         >
-                            <Text style={{ fontFamily: "PoppinsSBold" }}>View All</Text>
-                            <MaterialCommunityIcons name="chevron-right" size={20} />
-                        </View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <Text style={{ fontFamily: "poppins-sb" }}>View All</Text>
+                                <MaterialCommunityIcons name="chevron-right" size={20} />
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-
                     <View style={{ paddingHorizontal: 20 }}>
                         {this.state.recentMovies.map((item, index) => {
                             return index < 4 ? (

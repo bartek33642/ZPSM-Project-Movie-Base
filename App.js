@@ -47,6 +47,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainRoot from './app/pages/MainRoot';
 import MovieDetail from './app/pages/MovieDetail';
 import * as Font from "expo-font";
+import ViewAll from './app/pages/ViewAll';
 // import MovieItem from './app/components/MovieItem'; //importujemy komponent MovieItem
 // import { useFonts } from 'expo-font';
 
@@ -56,7 +57,7 @@ export default function App() {
   const [fontsLoaded, setFontLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    async function loadResourcesAndDataAsync(){
+    async function loadResourcesAndDataAsync() {
       try {
         // Load fonts
         await Font.loadAsync({
@@ -93,24 +94,29 @@ export default function App() {
   //   <View></View>;
   // } else {
 
-    return (
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name="MainRoot"
-            component={MainRoot}
-            options={{ title: "MainRoot" }}
-          />
-          <Stack.Screen
-            name="MovieDetail"
-            component={MovieDetail}
-            options={{ title: "MovieDetail" }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="MainRoot"
+          component={MainRoot}
+          options={{ title: "MainRoot" }}
+        />
+        <Stack.Screen
+          name="MovieDetail"
+          component={MovieDetail}
+          options={{ title: "MovieDetail" }}
+        />
+        <Stack.Screen
+          name="ViewAll"
+          component={ViewAll}
+          options={{ title: "ViewAll" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
