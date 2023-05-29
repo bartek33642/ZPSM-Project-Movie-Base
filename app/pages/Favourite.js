@@ -46,7 +46,7 @@ export default function Favourite({ navigation, route }) {
                 <SafeAreaView
                     style={{ felx: 1, justifyContent: "center", alignItems: "center" }}
                 >
-                    <View style={{ alignItems: "center" }}>
+                    <View style={{ alignItems: "center", paddingTop: 300 }}>
                         <MaterialCommunityIcons name="delete-outline" size={30} />
                         <View style={{ marginBottom: 5 }} />
                         <Text style={styles.nodata}>No Data Found</Text>

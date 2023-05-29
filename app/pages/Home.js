@@ -41,7 +41,6 @@ export default class Home extends Component {
                     movie.genre_ids.forEach((genreid) => {
                         var genreData = allgenres.filter((x) => x.id == genreid);
                         if (genreData.length != 0) {
-                            //console.log(genreData[0].name);
                             movie.genres.push(genreData[0].name);
                         }
                     });
@@ -81,7 +80,6 @@ export default class Home extends Component {
                             movie.genre_ids.forEach((genreid) => {
                                 var genreData = allgenres.filter((x) => x.id == genreid);
                                 if (genreData.length != 0) {
-                                    //console.log(genreData[0].name);
                                     movie.genres.push(genreData[0].name);
                                 }
                             });
@@ -125,7 +123,7 @@ export default class Home extends Component {
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Movie Catch</Text>
-                    <MaterialCommunityIcons name="magnify" size={24} />
+                    {/* <MaterialCommunityIcons name="magnify" size={24} /> */}
                 </View>
                 <ScrollView>
                     <View
