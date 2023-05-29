@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 export default class Settings extends Component {
     render() {
         const onPressButton = () => {
-            Linking.openURL('https://pastebin.com/zN1MrijH');
+            Linking.openURL('https://pwsztaredupl-my.sharepoint.com/:w:/g/personal/33642_student_pwsztar_edu_pl/EZ35UmObjylPk-V56uNJaVcBFzJd7vjVgINNyNBf6D7S7g?e=at05K0');
         };
 
         return (
