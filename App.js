@@ -8,6 +8,7 @@ import MovieDetail from './app/pages/MovieDetail';
 import * as Font from "expo-font";
 import ViewAll from './app/pages/ViewAll';
 import { LogBox } from 'react-native';
+import CastViewAll from './app/pages/CastViewAll';
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
 
@@ -62,6 +63,11 @@ export default function App() {
           name="ViewAll"
           component={ViewAll}
           options={{ title: "ViewAll" }}
+        />
+        <Stack.Screen
+          name="CastViewAll"
+          component={CastViewAll}
+          options={{ title: "CastViewAll" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

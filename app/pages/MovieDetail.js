@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, Image, TouchableWithoutFeedback, Modal, } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableWithoutFeedback, Modal, Dimensions, } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Constants from 'expo-constants';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -9,14 +9,21 @@ import TeaserTrailer from '../models/TeaserTrailer';
 import TrailerItem from '../components/TrailerItem';
 import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
+import Cast from '../models/Cast';
+import CastItem from '../components/CastItem';
 
 const db = SQLite.openDatabase("movie.db");
 class MovieDetail extends Component {
     movieItem = null;
+    baseUrl = "http://api.themoviedb.org/3/movie/";
+    apiKey = "802b2c4b88ea1183e50e6b285a27696e";
+    scrollHeight = 0;
     constructor(props) {
         super(props);
         this.movieItem = props.route.params.item;
         this.readMovieData(this.movieItem);
+        let topSpace = Constants.statusBarHeight + 10 + 48;
+        this.scrollHeight = Dimensions.get("screen").height - topSpace - 70;
     }
 
     state = {
@@ -24,6 +31,7 @@ class MovieDetail extends Component {
         activeTrailerKey: "",
         modalVisible: false,
         isFavorite: false,
+        castResults: [],
     };
 
     readMovieData(data) {
@@ -123,16 +131,13 @@ class MovieDetail extends Component {
     }
 
     componentDidMount() {
-        return fetch
-            (
-                'http://api.themoviedb.org/3/movie/' +
-                this.movieItem.id +
-                '/videos?api_key=802b2c4b88ea1183e50e6b285a27696e'
+        return fetch(
+            this.baseUrl + this.movieItem.id + "/videos?api_key=" + this.apiKey
             )
             .then((response) => response.json())
             .then((responseJson) => {
-                var items = [];
-                responseJson.results.map(movie => {
+                let items = [];
+                responseJson.results.map((movie) => {
                     items.push(new TeaserTrailer({
                         key: movie.key,
                         name: movie.name,
@@ -141,9 +146,29 @@ class MovieDetail extends Component {
                     );
                 });
                 this.setState({ teaserTrailers: items });
-            })
+
+                fetch(
+                    this.baseUrl + this.movieItem.id + "/credits?api_key=" + this.apiKey
+                )
+                .then((response) => response.json())
+                .then((responseJson) => {
+                let casts = [];
+                responseJson.cast.map((cast) => {
+                    casts.push(
+                        new Cast({
+                            id: cast.id,
+                            name: cast.name,
+                            profile_path: cast.profile_path,
+                            character: cast.character,
+                        })
+                    );
+            });
+            this.setState({ castResults: casts });
+        })
             .catch((error) => console.error(error));
-    }
+    })
+    .catch((error) => console.error(error));
+}
 
 
 
@@ -281,9 +306,64 @@ class MovieDetail extends Component {
                                     );
                                 })}
                         </View>
+                        <View
+                        style={{
+                          justifyContent: "space-between",
+                          flexDirection: "row",
+                          flex: 1,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.header,
+                          ]}
+                        >
+                          Casts
+                        </Text>
+                        <TouchableWithoutFeedback
+                          onPress={() =>
+                            this.props.navigation.navigate("CastViewAll", {
+                              movieid: this.movieItem.id,
+                            })
+                          }
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              flexWrap: "wrap",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontFamily: "poppins-sb",
+                              }}
+                            >
+                              View All
+                            </Text>
+                            <MaterialCommunityIcons
+                              name="chevron-right"
+                              size={20}
+                            />
+                          </View>
+                        </TouchableWithoutFeedback>
+                      </View>
+                      <ScrollView>
+                        {this.state.castResults.map((cast, index) => {
+                          return index < 4 ? (
+                            <CastItem
+                              cast={cast}
+                              key={cast.id}
+                            />
+                          ) : (
+                            <View key={cast.id} />
+                          );
+                        })}
+                      </ScrollView>
                     </View>
-                </ScrollView>
-            </View>
+                  </ScrollView>
+                </View>
         );
     }
 }
